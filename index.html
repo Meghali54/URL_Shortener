@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>URL Shortener</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 60px auto;
+      padding: 20px;
+      text-align: center;
+    }
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+      margin: 10px 0;
+      width: 80%;
+    }
+    .short-link {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔗 Simple URL Shortener</h1>
+  <input type="text" id="longUrl" placeholder="Enter long URL here" />
+  <br />
+  <button onclick="shortenUrl()">Shorten URL</button>
+
+  <div class="short-link" id="result"></div>
+
+  <script>
+    async function shortenUrl() {
+      const longUrl = document.getElementById('longUrl').value;
+      const resultDiv = document.getElementById('result');
+
+      if (!longUrl) {
+        resultDiv.innerText = '⚠️ Please enter a URL.';
+        return;
+      }
+
+      try {
+        const response = await fetch('http://localhost:5000/shorten', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ longUrl })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          resultDiv.innerHTML = `✅ Short URL: <a href="${data.shortUrl}" target="_blank">${data.shortUrl}</a>`;
+        } else {
+          resultDiv.innerText = `❌ Error: ${data.error}`;
+        }
+      } catch (err) {
+        resultDiv.innerText = '❌ Something went wrong. Is the server running?';
+      }
+    }
+  </script>
+</body>
+</html>
